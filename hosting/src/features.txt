@@ -1,0 +1,32 @@
+login
+store login creds
+set appointment intevals
+create appointment
+submit appointment
+block of appointment time slots
+check if timeslot is blocked on back end
+error checking
+validation
+bootstrap
+css
+pages
+navbar
+routes
+generate user links
+logout
+Availability
+
+Todos:
+
+1. Sign up frontend                             -Done
+2. Send user data to database                   -Done
+3. Save user data in session
+4. Login frontend
+5. Get data from database
+6. Create appointment frontend
+7. Get appointment and display
+8. Accept/decline appointment
+9. Password varification
+10.Testing
+11.Type management
+
