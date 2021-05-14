@@ -6,6 +6,7 @@ import { Calendar } from 'react-date-range';
 import 'react-date-range/dist/styles.css'; // main style file
 import 'react-date-range/dist/theme/default.css'; // theme css file
 import { useAuth } from '../context/authContext';
+import te from 'date-fns/esm/locale/te/index.js';
 
 
 
@@ -16,10 +17,10 @@ function CreateAppointment(props:any) {
     const [hostData, setHostData]:any = useState({})
     const [client, setClient] = useState('')
     const {currentUserData} = useAuth()
-
-    console.log(currentUserData)
-
-    let appointmentData = {
+    const [aptDate, setAptDate] = useState(new Date())
+    const [aptTime, setAptTime] = useState('');
+    const [aptDateName, setAptDateName] = useState('');
+    const [appointmentData, setAppointmentData] = useState({
         host_name: '',
         host_id: '',
         host_email: '',
@@ -34,11 +35,24 @@ function CreateAppointment(props:any) {
         client_delete: false,
         client_phoneNumber: '',
         date_time_created: ''
-    }
+    })
+
+    console.log(currentUserData)
+    console.log(aptDate)
+
 
     const handleChange = (e:any) =>{
         setHostEmail(e.target.value.trim())
     }
+
+    const handleTimeClick = (e:any) => {
+        e.preventDefault()
+        console.log(e.target.value)
+        setAptTime(e.target.value)
+        appointmentData.meeting_time = aptTime;
+    }
+
+    
 
     async function handleUserSearch(e:any){
         e.preventDefault()
@@ -59,29 +73,35 @@ function CreateAppointment(props:any) {
                 }
                 const date = new Date()
                 setHostData(host)
-                appointmentData.host_name = `${host.firstName + " " + host.lastName}`;
-                appointmentData.host_id = host.hostId;
-                appointmentData.host_email = host.email;
-                appointmentData.host_phoneNumber = host.phoneNumber;
-                appointmentData.client_id = currentUserData.uid;
-                appointmentData.client_name = `${currentUserData.firstName+ " " + currentUserData.lastName}`;
-                appointmentData.client_email = currentUserData.email;
-                appointmentData.client_phoneNumber = currentUserData.phoneNumber;
-                appointmentData.date_time_created = date.toDateString();
-                
-
+                let tempData = appointmentData;
+                tempData.host_name = `${host.firstName + " " + host.lastName}`;
+                tempData.host_id = host.hostId;
+                tempData.host_email = host.email;
+                tempData.host_phoneNumber = host.phoneNumber;
+                tempData.client_id = currentUserData.uid;
+                tempData.client_name = `${currentUserData.firstName+ " " + currentUserData.lastName}`;
+                tempData.client_email = currentUserData.email;
+                tempData.client_phoneNumber = currentUserData.phoneNumber;
+                tempData.date_time_created = date.toDateString();
+                setAppointmentData(tempData)
+                console.log(appointmentData)
             }
         }catch(err) {
             console.error(err)
         }
         
         setClient(JSON.stringify(u))
-        // setClient(JSON.stringify(u))
     }
     
 
     function handleSelect(date:any){
-        console.log(date)
+            setAptDate(date)
+        console.log(aptDate)
+    }
+    
+    async function handleAptSubmit(e:any) {
+        e.preventDefault()
+        console.log(appointmentData)
     }
     let hostView
     if (hostData.firstName) {
@@ -93,11 +113,23 @@ function CreateAppointment(props:any) {
     } else {
         hostView = <h5>Who are you meeting with?</h5>
     }
+
+    let aptView
+    if (aptTime === ''){
+        aptView = <div>
+            <h5>Please select an appointment time</h5>
+        </div>
+    }else {
+        const monthNames = ["January", "February", "March", "April", "May", "June","July", "August", "September", "October", "November", "December"];
+        const dateStr = monthNames[aptDate.getMonth()] + ' ' + aptDate.getDate() + ' ' + aptDate.getFullYear();
+        console.log(typeof dateStr)
+        appointmentData.meeting_date = dateStr;
+        aptView = <div>
+            <h5>{`${monthNames[aptDate.getMonth()] + " " + aptDate.getDate() + ' ' + aptDate.getFullYear() + ', ' + aptTime}`}</h5>
+        </div>
+    }
     return (
         <div className="row">
-            {/* {Object.values(props).map((e:any) => {
-                return <div>{e.name}</div>
-            })} */}
             <Navbar />
             <h1>Create Appointment</h1><br/>
             <form className="date-form col-md-6 mx-auto">
@@ -109,6 +141,7 @@ function CreateAppointment(props:any) {
                     <input type="email" className="form-control" placeholder="Please enter a valid user email" onChange={handleChange}/><br className="spacing"/>
                     <button className="btn btn-primary" onClick={handleUserSearch}>Search</button>
                 </div>
+                <div>{aptView}</div>
                 <section>
                     <section className="cal split-box">
                         <Calendar
@@ -118,25 +151,20 @@ function CreateAppointment(props:any) {
                     </section>
                     <section className="timeholder split-box">
                         <ul className="list-group">
-                            <button type="button" className="btn btn-outline-primary">  8:00am </button>
-                            <button className="btn btn-outline-primary"> 10:00am </button>
-                            <button className="btn btn-outline-primary"> 9:00am </button>
-                            <button className="btn btn-outline-primary"> 10:00am </button>
-                            <button className="btn btn-outline-primary"> 11:00am </button>
-                            <button className="btn btn-outline-primary"> 12:00pm </button>
-                            <button className="btn btn-outline-primary"> 1:00pm </button>
-                            <button className="btn btn-outline-primary"> 2:00pm </button>
-                            <button className="btn btn-outline-primary"> 3:00pm </button>
-                            <button className="btn btn-outline-primary"> 4:00pm </button>            
+                            <button type="button" className="btn btn-outline-primary" value="8:00am" onClick={handleTimeClick}>  8:00am </button>
+                            <button type="button" className="btn btn-outline-primary" value="9:00am" onClick={handleTimeClick}> 9:00am </button>
+                            <button type="button" className="btn btn-outline-primary" value="10:00am" onClick={handleTimeClick}> 10:00am </button>
+                            <button type="button" className="btn btn-outline-primary" value="11:00am" onClick={handleTimeClick}> 11:00am </button>
+                            <button type="button" className="btn btn-outline-primary" value="12:00pm" onClick={handleTimeClick}> 12:00pm </button>
+                            <button type="button" className="btn btn-outline-primary" value="1:00pm" onClick={handleTimeClick}> 1:00pm </button>
+                            <button type="button" className="btn btn-outline-primary" value="2:00pm" onClick={handleTimeClick}> 2:00pm </button>
+                            <button type="button" className="btn btn-outline-primary" value="3:00pm" onClick={handleTimeClick}> 3:00pm </button>
+                            <button type="button" className="btn btn-outline-primary" value="4:00pm" onClick={handleTimeClick}> 4:00pm </button>            
                         </ul>
                     </section>
                 </section>
-
-                
-                
-                
             </form>
-            <button className="btn btn-primary">Book Appointment</button>
+            <button type="button" className="btn btn-primary" onClick={handleAptSubmit}>Book Appointment</button>
         </div>
     )
 }

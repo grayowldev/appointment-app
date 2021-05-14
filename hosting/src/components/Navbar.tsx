@@ -20,10 +20,9 @@ function Navbar() {
     }
     return (
         <nav style={{marginBottom: 100}}>
-            <h1>Navbar</h1>
+            <h1>PocketRN</h1>
             <ul className="nav-items">
-                <li>home</li>
-                <li>view appointments</li>
+                <Link to="/show-appointments"><li>view appointments</li></Link>
                 <Link to="/create-appointment"><li>create appointment</li></Link>
             </ul>
             <div>
