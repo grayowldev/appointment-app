@@ -39,10 +39,7 @@ export async function getUserData(userUid:string): Promise<any> {
   return res;
 }
 
-export async function createAppointment(data:any): Promise<any> {
-  const res = await firebaseFunctions.httpsCallable('')()
-  return res;
-}
+
 
 export async function updateAppointmentStatus(data:any): Promise<any> {
   const res = await firebaseFunctions.httpsCallable('')()
@@ -61,11 +58,6 @@ export async function signup(data:any): Promise<any> {
   return res;
 }
 
-export async function getUserByEmail1(email:any): Promise<any> {
-
-  const res = await firebaseFunctions.httpsCallable('getUserByEmail1')(email)
-  return res;
-}
 
 
 export const auth = app.auth()
@@ -119,6 +111,12 @@ export async function getUserAppointments(data:any): Promise<any> {
 // TODO
 export async function getUserAppointmentById(data:any): Promise<any> {
 
+}
+
+// TODO
+export async function createAppointment(data:any): Promise<any> {
+  const res = await firebaseFunctions.httpsCallable('createAppointment')(data)
+  return res;
 }
 
 // TODO

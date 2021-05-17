@@ -1,7 +1,7 @@
 import React, {useState}from 'react'
 import DateTimeSelector from '../components/DateTimeSelector'
 import Navbar from '../components/Navbar'
-import {getUserByEmail} from '../sdk';
+import {getUserByEmail,createAppointment,getUserByUid} from '../sdk';
 import { Calendar } from 'react-date-range';
 import 'react-date-range/dist/styles.css'; // main style file
 import 'react-date-range/dist/theme/default.css'; // theme css file
@@ -16,7 +16,7 @@ function CreateAppointment(props:any) {
     const [hostEamil, setHostEmail] = useState('');
     const [hostData, setHostData]:any = useState({})
     const [client, setClient] = useState('')
-    const {currentUserData} = useAuth()
+    const {currentUser,currentUserData} = useAuth()
     const [aptDate, setAptDate] = useState(new Date())
     const [aptTime, setAptTime] = useState('');
     const [aptDateName, setAptDateName] = useState('');
@@ -25,15 +25,15 @@ function CreateAppointment(props:any) {
         host_id: '',
         host_email: '',
         host_phoneNumber: '',
-        client_name: '',
-        client_id: '',
-        client_email: '',
+        client_name: `${currentUserData.data.firstName + ' ' + currentUserData.data.lastName}`,
+        client_id: currentUserData.data.uid,
+        client_email: currentUserData.data.email,
         status: 'pending',
         meeting_date: '',
         meeting_time: '',
         host_delete: false,
         client_delete: false,
-        client_phoneNumber: '',
+        client_phoneNumber: currentUserData.data.phoneNumber,
         date_time_created: ''
     })
 
@@ -49,7 +49,7 @@ function CreateAppointment(props:any) {
         e.preventDefault()
         console.log(e.target.value)
         setAptTime(e.target.value)
-        appointmentData.meeting_time = aptTime;
+        appointmentData.meeting_time = e.target.value;
     }
 
     
@@ -78,10 +78,6 @@ function CreateAppointment(props:any) {
                 tempData.host_id = host.hostId;
                 tempData.host_email = host.email;
                 tempData.host_phoneNumber = host.phoneNumber;
-                tempData.client_id = currentUserData.uid;
-                tempData.client_name = `${currentUserData.firstName+ " " + currentUserData.lastName}`;
-                tempData.client_email = currentUserData.email;
-                tempData.client_phoneNumber = currentUserData.phoneNumber;
                 tempData.date_time_created = date.toDateString();
                 setAppointmentData(tempData)
                 console.log(appointmentData)
@@ -102,7 +98,22 @@ function CreateAppointment(props:any) {
     async function handleAptSubmit(e:any) {
         e.preventDefault()
         console.log(appointmentData)
+        
+        // if (currentUserData == null){
+        //     console.log(currentUser.uid)
+        //     try {
+        //         const userData = await getUserByUid({uid:currentUser.uid})
+        //     } catch(error){
+        //         console.log(error)
+        //     }
+            
+        // }
+        console.log(currentUserData)
+        console.log(currentUser)
+        const apt = await createAppointment(appointmentData)
+        console.log(apt)
     }
+
     let hostView
     if (hostData.firstName) {
         hostView = <div className="card">

@@ -205,7 +205,13 @@ exports.deleteUserData = functions.https.onCall(async (data, context) => {
  */
 
  exports.createAppointment = functions.https.onCall(async (data, context) => {
-    
+    const res = await firestoreDB.collection("appointment_group").add(data)
+    const id = res.id
+    await firestoreDB.collection("appointments").doc(data.host_id).collection('aptdocs').add({id: id, host:true});
+    await firestoreDB.collection("appointments").doc(data.client_id).collection('aptdocs').add({id: id, host:false});
+    // await firestoreDB.collection("appointments").doc(data.client_id).add(res);
+    return {status: "Data added successfully"}
+    // return res.id;
 })
 
 /**

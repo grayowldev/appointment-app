@@ -1,5 +1,5 @@
 import React, {useContext, useState, useEffect} from 'react'
-import {auth} from '../sdk';
+import {auth,getUserByUid} from '../sdk';
 
 const AuthContext = React.createContext()
 
@@ -30,11 +30,22 @@ export  function AuthProvider({children}) {
     }
 
     useEffect(() => {
-        const unsubscribe = auth.onAuthStateChanged(user => {
+        const fetchData = async (user) => {
+            const userData = await getUserByUid({uid:user.uid})
+            setCurrentUserData(userData)
+        }
+        const unsubscribe = auth.onAuthStateChanged(async user => {
             setCurrentUser(user)
+            if (user){
+                await fetchData(user);
+            }
+            
+            // .then((e) => {
+            //     setCurrentUserData(e);
+            // })
+            // const userData = getUserByUid({uid:currentUser.uid})
             setLoading(false)
         })
-
         return unsubscribe
     },[])
 

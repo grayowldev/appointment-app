@@ -42,10 +42,10 @@ function Login() {
                 uid: user.user.uid
             }
 
-            const userData = await getUserByUid(data);
-            console.log(userData)
-            setUserInfo(userData)
-            addCurrentUserData(userData.data);
+            // const userData = await getUserByUid(data);
+            // console.log(userData)
+            // setUserInfo(userData)
+            // addCurrentUserData(userData.data);
             history.push("/show-appointments") 
         } catch {
             setError("Failed to login")
